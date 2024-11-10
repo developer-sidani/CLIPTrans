@@ -2,13 +2,14 @@ import sys
 sys.path.append('src/models')
 sys.path.append('src/utils')
 
+from comet_ml import Experiment 
 import torch
 import argparse
 import os
 from multi30k import *
 from wit import *
 from wmt import *
-from coco_captions import *
+# from coco_captions import *
 from model_utils import get_lang_code
 from dataset import *
 from model import CLIPTrans, CLIPTrans_CLIP
@@ -20,7 +21,7 @@ import random
 from collate_fns import *
 import torch.nn as nn
 
-get_ds = {'multi30k': get_Multi30k, 'wit': get_WIT, 'wmt': get_WMT, 'coco': get_coco}
+get_ds = {'multi30k': get_Multi30k, 'wit': get_WIT, 'wmt': get_WMT}
 
 def init_seed(seed):
     random.seed(seed)
@@ -37,6 +38,11 @@ def main(params):
     os.makedirs(params.model_name, exist_ok = True)
     MODEL = CLIPTrans if not params.unfreeze_clip else CLIPTrans_CLIP
     model = MODEL(params)
+    
+    # Comet ML Experiment
+    experiment = Experiment(api_key=params.comet_key, project_name=params.comet_project, workspace=params.comet_workspace)
+    experiment.log_parameters(vars(params))  # Log all parameters
+    
     if params.num_gpus > 1:
         init_distributed()
     else:
@@ -78,18 +84,6 @@ def main(params):
     train_dataset = MultiModalDataset(**train_dataset_inputs)
     test_dataset = MultiModalDataset(**test_dataset_inputs)
 
-    # if params.single_stage:
-    #     # if params.caption_ds == '':
-    #     #     if params.ds == 'wmt':
-    #     #         params.caption_ds = 'multi30k'
-    #     #     else:
-    #     #         params.caption_ds = params.ds
-    #     # if params.caption_ds != params.ds:
-    #     #     train_texts, test_texts, train_tok, test_tok, train_image_embs, test_image_embs, train_text_embs, test_text_embs = get_ds[params.caption_ds](params, model, params.test_ds, force_pretraining = True)
-    #     train_dataset_inputs['clip_embs'] = train_image_embs
-    #     mix_dataset = MultiModalDataset(**train_dataset_inputs) # 'translate' -> captioning, 'triplet' -> text_recon
-    #     train_dataset = ConcatDataset(train_dataset, mix_dataset)
-
     if not params.unfreeze_clip:
         del model.clip # If CLIP is always frozen, we can remove it from memory since all the data is preprocessed
     elif is_main_process():
@@ -118,7 +112,7 @@ def main(params):
         print('%' * 80)
         print(params)
         print('%' * 80)
-    runner = Runner(train_dl, test_dl, params)
+    runner = Runner(train_dl, test_dl, params, experiment)
     runner.train(model, tokenizer, params)
 
 if __name__ == '__main__':
@@ -152,6 +146,9 @@ if __name__ == '__main__':
     parser.add_argument('--noise_train', action = 'store_true', help = 'Remove mask_prob% of the tokens while training')
     parser.add_argument('--noise_test', action = 'store_true', help = 'Remove mask_prob% of the tokens while testing')
     parser.add_argument('--preprocess_only', action = 'store_true')
+    parser.add_argument('--comet_key', type = str, default = 'your-api', help = 'Comet ML API key')
+    parser.add_argument('--comet_project', type = str, default = 'cliptrans', help = 'Comet ML project name')
+    parser.add_argument('--comet_workspace', type = str, default = 'developer-sidani', help = 'Comet ML workspace name')
     params = parser.parse_args()
     assert not (params.stage in ['caption', 'text_recon'] and params.ds == 'wmt'), 'While using text-only NMT, you cannot train stage 1. Make sure you load a stage 1 pretrained model'
     main(params)

@@ -16,13 +16,14 @@ import evaluate
 import glob
 
 class Runner:
-    def __init__(self, train_dl, test_dl, params):
+    def __init__(self, train_dl, test_dl, params, experiment):
         self.train_dl = train_dl
         self.test_dl = test_dl
         self.update_count = params.update_count
         self.test_after = params.test_after * self.update_count
         self.is_pretraining = params.stage in ['caption', 'text_recon']
-        self.meteor = evaluate.load('meteor') # The only reason this is in __init__ is to remove the nltk download info from every epoch
+        self.meteor = evaluate.load('meteor')
+        self.experiment = experiment  # Comet Experiment
 
     def save_model(self, model, name, epoch):
         checkpoint = {
@@ -33,29 +34,30 @@ class Runner:
             'best_bleu_test': self.best_bleu_test
         }
         torch.save(checkpoint, name)
+        self.experiment.log_asset(file_name=name, file_type='model')  # Log the model as an asset
 
     def load_model(self, params, model, name, load_opt):
         if not os.path.exists(name) and os.path.exists(name.replace('.pth', '_1.pth')):
             model_names = sorted(glob.glob(name.replace('.pth', '*')))
-            checkpoint = {'model': torch.load(model_names[0], map_location = torch.device('cpu')), 'epoch': 0, 'best_bleu_test': 0}
+            checkpoint = {'model': torch.load(model_names[0], map_location=torch.device('cpu')), 'epoch': 0, 'best_bleu_test': 0}
             for model_name in model_names[1:]:
-                checkpoint['model'].update(torch.load(model_name, map_location = torch.device('cpu')))
+                checkpoint['model'].update(torch.load(model_name, map_location=torch.device('cpu')))
         else:
-            checkpoint = torch.load(name, map_location = torch.device('cpu'))
+            checkpoint = torch.load(name, map_location=torch.device('cpu'))
         if params.num_gpus == 1:
             from collections import OrderedDict
             new_state_dict = OrderedDict()
             for k, v in checkpoint['model'].items():
-                name = k[7:] if 'module' in k[:7] else k # remove 'module.' of DataParallel/DistributedDataParallel
+                name = k[7:] if 'module' in k[:7] else k  # remove 'module.' of DataParallel/DistributedDataParallel
                 new_state_dict[name] = v
             checkpoint['model'] = new_state_dict
         
-        model.load_state_dict(checkpoint['model'], strict = False)
+        model.load_state_dict(checkpoint['model'], strict=False)
         
         if load_opt:
             try:
-                self.optimizer.load_state_dict(checkpoint['optimizer'], strict = False)
-                self.scaler.load_state_dict(checkpoint['scaler'], strict = False)
+                self.optimizer.load_state_dict(checkpoint['optimizer'])
+                self.scaler.load_state_dict(checkpoint['scaler'])
             except:
                 warnings.warn('Could not load optimizer due to extra parameters')
         else:
@@ -67,9 +69,8 @@ class Runner:
     def fit_one_epoch(self, model, tokenizer, params, epoch):
         model.train()
         train_loss = 0.0
-        prob = torch.rand(1).item()
         self.optimizer.zero_grad()
-        for step, batch in enumerate(tqdm(self.train_dl, desc = f'Epoch {epoch}', disable = not is_main_process())):
+        for step, batch in enumerate(tqdm(self.train_dl, desc=f'Epoch {epoch}', disable=not is_main_process())):
             batch['mbart'], batch['clip'] = send_to_cuda(batch['mbart']), send_to_cuda(batch['clip'])
             with torch.autocast(device_type='cuda'):
                 output = model(batch)
@@ -91,7 +92,9 @@ class Runner:
                 self.test(model, tokenizer, params, epoch)
         
         if is_main_process():
-            print(f'Epoch {epoch}: Train Loss: {self.update_count * train_loss/(params.num_gpus * len(self.train_dl))}\n')
+            avg_loss = self.update_count * train_loss / (params.num_gpus * len(self.train_dl))
+            print(f'Epoch {epoch}: Train Loss: {avg_loss}\n')
+            self.experiment.log_metric("train_loss", avg_loss, step=epoch)
             if self.is_pretraining:
                 self.save_model(model, f'{params.model_name}/model_pretrained.pth', epoch)
 
@@ -101,13 +104,13 @@ class Runner:
         translated_sentences, target_sentences = [], []
         tokenizer.tgt_lang = get_lang_code(params.tgt_lang)
         with torch.no_grad():
-            for i, batch in enumerate(tqdm(self.test_dl, desc = f'Epoch {epoch}', disable = not is_main_process())):
+            for i, batch in enumerate(tqdm(self.test_dl, desc=f'Epoch {epoch}', disable=not is_main_process())):
                 batch['clip'] = send_to_cuda(batch['clip'])
                 batch['mbart'] = send_to_cuda(batch['mbart'])
                 raw_target_text = batch.pop('raw')
                 with torch.autocast(device_type='cuda'):
-                    output = model(batch, mode = 'test')
-                output = tokenizer.batch_decode(output, skip_special_tokens = True)
+                    output = model(batch, mode='test')
+                output = tokenizer.batch_decode(output, skip_special_tokens=True)
                 if params.num_gpus > 1:
                     output_collated = [None for _ in range(params.num_gpus)]
                     dist.all_gather_object(output_collated, output)
@@ -126,8 +129,10 @@ class Runner:
 
         if is_main_process():
             bleu_score = sacrebleu.corpus_bleu(translated_sentences, [target_sentences]).score
-            meteor_score = self.meteor.compute(predictions = translated_sentences, references = target_sentences)['meteor']
+            meteor_score = self.meteor.compute(predictions=translated_sentences, references=target_sentences)['meteor']
             print(f'Epoch {epoch}; Test BLEU: {bleu_score}; Test METEOR: {100 * meteor_score}')
+            self.experiment.log_metric("bleu_score", bleu_score, step=epoch)
+            self.experiment.log_metric("meteor_score", 100 * meteor_score, step=epoch)
             print('------------------------------------------')
             for i, (tra, tgt) in enumerate(zip(translated_sentences[0:5], target_sentences[0:5])):
                 print(f'Target Sentence {i}: {tgt}')
@@ -140,19 +145,19 @@ class Runner:
 
     def train(self, model, tokenizer, params):
         self.best_bleu_test = -float('Inf')
-        self.optimizer = optim.AdamW(model.parameters(), lr = params.lr, betas = (0.9, 0.98), eps = 1e-6, weight_decay = 0.0)
+        self.optimizer = optim.AdamW(model.parameters(), lr=params.lr, betas=(0.9, 0.98), eps=1e-6, weight_decay=0.0)
         self.scaler = GradScaler()
-        steps_per_epoch = math.ceil(len(self.train_dl)/self.update_count)
+        steps_per_epoch = math.ceil(len(self.train_dl) / self.update_count)
         last_epoch, last_batch = 0, -1
-        self.cycle_scheduler = PolynomialLRDecay(self.optimizer, max_decay_steps = 40000, end_learning_rate = params.lr, power = 2.0)
+        self.cycle_scheduler = PolynomialLRDecay(self.optimizer, max_decay_steps=40000, end_learning_rate=params.lr, power=2.0)
         if params.load_model:
-            last_epoch, self.best_bleu_test = self.load_model(params, model, f'{params.model_name}/{params.load_model}' if '/' not in params.load_model else f'{params.model_dir}/{params.load_model}', load_opt = True)
+            last_epoch, self.best_bleu_test = self.load_model(params, model, f'{params.model_name}/{params.load_model}' if '/' not in params.load_model else f'{params.model_dir}/{params.load_model}', load_opt=True)
             if params.continue_training:
                 last_batch = (last_epoch - 1) * steps_per_epoch
                 for step in range(last_batch):
                     self.cycle_scheduler.step()
-            elif not params.test: # Load a model but restart training
-                last_epoch, last_batch = 0, -1 
+            elif not params.test:  # Load a model but restart training
+                last_epoch, last_batch = 0, -1
                 self.best_bleu_test = -float('Inf')
         if params.test:
             self.test(model, tokenizer, params, last_epoch)

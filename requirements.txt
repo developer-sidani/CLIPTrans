@@ -62,3 +62,4 @@ urllib3==1.26.14
 wcwidth==0.2.6
 xxhash==3.2.0
 yarl==1.8.2
+comet_ml
