@@ -6,6 +6,7 @@ sys.path.append('src/utils')
 from comet_ml import Experiment 
 import torch
 import argparse
+from dotenv import load_dotenv
 import os
 from multi30k import *
 from wit import *
@@ -41,7 +42,11 @@ def main(params):
     model = MODEL(params)
     
     # Comet ML Experiment
-    experiment = Experiment(api_key=params.comet_key, project_name=params.comet_project, workspace=params.comet_workspace)
+    load_dotenv()
+    comet_api_key = os.getenv('COMET_API_KEY')
+    comet_project = os.getenv('COMET_PROJECT_NAME')
+    comet_workspace = os.getenv('COMET_WORKSPACE')
+    experiment = Experiment(api_key=comet_api_key, project_name=comet_project, workspace=comet_workspace)
     experiment.log_parameters(vars(params))  # Log all parameters
     
     if params.num_gpus > 1:
@@ -147,9 +152,6 @@ if __name__ == '__main__':
     parser.add_argument('--noise_train', action = 'store_true', help = 'Remove mask_prob% of the tokens while training')
     parser.add_argument('--noise_test', action = 'store_true', help = 'Remove mask_prob% of the tokens while testing')
     parser.add_argument('--preprocess_only', action = 'store_true')
-    parser.add_argument('--comet_key', type = str, default = 'your-api', help = 'Comet ML API key')
-    parser.add_argument('--comet_project', type = str, default = 'cliptrans', help = 'Comet ML project name')
-    parser.add_argument('--comet_workspace', type = str, default = 'developer-sidani', help = 'Comet ML workspace name')
     params = parser.parse_args()
     assert not (params.stage in ['caption', 'text_recon'] and params.ds == 'wmt'), 'While using text-only NMT, you cannot train stage 1. Make sure you load a stage 1 pretrained model'
     main(params)
