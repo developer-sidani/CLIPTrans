@@ -54,8 +54,8 @@ PRETRAINED_MODELS_INFERENCE_PARAMS=(
 cd /home/asidani/CLIPTrans/
 
 send_discord "[${SLURM_JOB_ID}]: Executing the python script"
-# python3 src/main.py "${PRETRAINED_MODELS_INFERENCE_PARAMS[@]}"
-/home/asidani/.conda/envs/cliptrans/bin/python3 test.py
+
+/home/asidani/.conda/envs/cliptrans/bin/python3 src/main.py "${PRETRAINED_MODELS_INFERENCE_PARAMS[@]}"
 send_discord "[${SLURM_JOB_ID}]: Pretrained models inference ended"
 
 
