@@ -177,4 +177,5 @@ data/preprocessed/*
 .DS_Store
 .env
 data/*
+models/*
 log/*

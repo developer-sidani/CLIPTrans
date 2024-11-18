@@ -46,7 +46,7 @@ PRETRAINED_MODELS_INFERENCE_PARAMS=(
     --test_ds 2016 flickr
     --stage translate
     --test
-    --lm /home/asidani/thesis/pretrained_models/cliptrans/multi30k-en-fr/model_best_test_1.pth
+    --lm multi30k-en-fr/model_best_test_1.pth
 )
 
 
