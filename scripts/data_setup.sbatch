@@ -14,7 +14,7 @@ module load intel/python/3
 
 # Function to send Discord notifications
 function send_discord {
-    python3 /home/asidani/discord_notify.py "$@"
+    python3 /home/asidani/message.py "$@"
 }
 
 # Source environment
@@ -53,7 +53,7 @@ cp /home/asidani/thesis/data/test2017.zip images
 cp /home/asidani/thesis/data/mnt_images/test_2017-flickr-images.gz images
 cd images
 unzip test2017.zip
-mv translated_images test_2017_mscoco
+mv test2017 test_2017_mscoco
 tar -xvzf test_2017-flickr-images.tar.gz
 mv task1 test_2017_flickr
 tar -xf flickr30k-images.tar

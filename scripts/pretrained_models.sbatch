@@ -15,7 +15,7 @@ module load nvidia/cudasdk/11.6
 module load intel/python/3
 
 function send_discord {
-    python3 /home/asidani/discord_notify.py "$@"
+    python3 /home/asidani/message.py "$@"
 }
 
 
