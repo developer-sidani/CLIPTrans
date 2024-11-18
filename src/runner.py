@@ -151,7 +151,7 @@ class Runner:
         last_epoch, last_batch = 0, -1
         self.cycle_scheduler = PolynomialLRDecay(self.optimizer, max_decay_steps=40000, end_learning_rate=params.lr, power=2.0)
         if params.load_model:
-            last_epoch, self.best_bleu_test = self.load_model(params, model, f'{params.model_name}/{params.load_model}' if '/' not in params.load_model else f'{params.model_dir}/{params.load_model}', load_opt=True)
+            last_epoch, self.best_bleu_test = self.load_model(params, model, f'{params.load_model}' if '/' not in params.load_model else f'{params.model_dir}/{params.load_model}', load_opt=True)
             if params.continue_training:
                 last_batch = (last_epoch - 1) * steps_per_epoch
                 for step in range(last_batch):
