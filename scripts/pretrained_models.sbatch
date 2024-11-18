@@ -27,20 +27,14 @@ nvidia-smi || echo "Unable to run nvidia-smi"
 export CUDA_VISIBLE_DEVICES=$(nvidia-smi --query-gpu=memory.free --format=csv,noheader,nounits | awk '{ print NR-1 " " $1 }' | sort -k2 -n | tail -n1 | awk '{ print $1 }')
 echo "[SCRIPT]: Selected GPU ID: $CUDA_VISIBLE_DEVICES"
 
-
-
-source ~/.bashrc
-
-
 # 2 Activate the virtual environment
-conda activate cliptrans
-# source activate /home/asidani/miniconda3/envs/cliptrans
+source activate /home/asidani/.conda/envs/cliptrans
 
 # 3 Run the python script
 
 echo "[SCRIPT]: Starting the run"
 
-send_discord "[{SLURM_JOB_ID}]: Starting the run"
+send_discord "[${SLURM_JOB_ID}]: Starting the run"
 
 PRETRAINED_MODELS_INFERENCE_PARAMS=(
     --num_gpus 1
@@ -59,9 +53,10 @@ PRETRAINED_MODELS_INFERENCE_PARAMS=(
 
 cd /home/asidani/CLIPTrans/
 
-send_discord "[{SLURM_JOB_ID}]: Executing the python script"
-python3 src/main.py "${PRETRAINED_MODELS_INFERENCE_PARAMS[@]}"
-send_discord "[{SLURM_JOB_ID}]: Pretrained models inference ended"
+send_discord "[${SLURM_JOB_ID}]: Executing the python script"
+# python3 src/main.py "${PRETRAINED_MODELS_INFERENCE_PARAMS[@]}"
+/home/asidani/.conda/envs/cliptrans/bin/python3 test.py
+send_discord "[${SLURM_JOB_ID}]: Pretrained models inference ended"
 
 
 
