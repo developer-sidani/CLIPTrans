@@ -46,7 +46,7 @@ PRETRAINED_MODELS_INFERENCE_PARAMS=(
     --test_ds 2016 flickr
     --stage translate
     --test
-    --lm multi30k-en-fr/model_best_test_1.pth
+    --lm multi30k-en-fr/m30k_tiny_en-fr.pt
 )
 
 

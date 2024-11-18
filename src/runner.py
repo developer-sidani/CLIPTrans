@@ -47,12 +47,12 @@ class Runner:
         if params.num_gpus == 1:
             from collections import OrderedDict
             new_state_dict = OrderedDict()
-            for k, v in checkpoint.items():
+            for k, v in checkpoint['model'].items():
                 name = k[7:] if 'module' in k[:7] else k  # remove 'module.' of DataParallel/DistributedDataParallel
                 new_state_dict[name] = v
-            checkpoint = new_state_dict
+            checkpoint['model'] = new_state_dict
         
-        model.load_state_dict(checkpoint, strict=False)
+        model.load_state_dict(checkpoint['model'], strict=False)
         
         if load_opt:
             try:
