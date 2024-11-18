@@ -27,6 +27,11 @@ nvidia-smi || echo "Unable to run nvidia-smi"
 export CUDA_VISIBLE_DEVICES=$(nvidia-smi --query-gpu=memory.free --format=csv,noheader,nounits | awk '{ print NR-1 " " $1 }' | sort -k2 -n | tail -n1 | awk '{ print $1 }')
 echo "[SCRIPT]: Selected GPU ID: $CUDA_VISIBLE_DEVICES"
 
+
+
+source ~/.bashrc
+
+
 # 2 Activate the virtual environment
 source activate /home/asidani/miniconda3/envs/cliptrans
 
@@ -46,15 +51,15 @@ PRETRAINED_MODELS_INFERENCE_PARAMS=(
     --test_ds 2016 flickr
     --stage translate
     --test
-    --lm model_best_test.pth
+    --lm /home/asidani/thesis/pretrained_models/cliptrans/multi30k-en-fr/model_best_test_1.pth
 )
 
 
-PYTHON_PATH = "/home/asidani/miniconda3/envs/env-ali/bin/python3"
+PYTHON_PATH = "/home/asidani/miniconda3/envs/cliptrans/bin/python3"
 
 
 send_discord "Executing the python script"
-$PYTHON_PATH src/main.py "${PRETRAINED_MODELS_INFERENCE_PARAMS[@]}"
+$PYTHON_PATH /home/asidani/CLIPTrans/src/main.py "${PRETRAINED_MODELS_INFERENCE_PARAMS[@]}"
 send_discord "Pretrained models inference ended"
 
 
