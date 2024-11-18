@@ -5,8 +5,8 @@
 #SBATCH --gres=gpu:1
 #SBATCH --job-name=tst
 #SBATCH --mem=40GB
-#SBATCH --output=logs/job_name_%j.log
-#SBATCH --error=logs/job_name_%j.err
+#SBATCH --output=/home/asidani/logs/job_name_%j.log
+#SBATCH --error=/home/asidani/logs/job_name_%j.err
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=ahmad.sidani@studenti.polito.it
 
@@ -57,18 +57,19 @@ PRETRAINED_MODELS_INFERENCE_PARAMS=(
 
 PYTHON_PATH = "/home/asidani/miniconda3/envs/cliptrans/bin/python3"
 
+cd /home/asidani/CLIPTrans/
 
 send_discord "Executing the python script"
-$PYTHON_PATH /home/asidani/CLIPTrans/src/main.py "${PRETRAINED_MODELS_INFERENCE_PARAMS[@]}"
+$PYTHON_PATH src/main.py "${PRETRAINED_MODELS_INFERENCE_PARAMS[@]}"
 send_discord "Pretrained models inference ended"
 
 
 
-CURRENT_DIR=$(pwd)
+
 
 # Define the full path for log and error files
-LOG_FILE="${CURRENT_DIR}/logs/job_name_${SLURM_JOB_ID}.log"
-ERR_FILE="${CURRENT_DIR}/logs/job_name_${SLURM_JOB_ID}.err"
+LOG_FILE="/home/asidani/logs/job_name_${SLURM_JOB_ID}.log"
+ERR_FILE="/home/asidani/logs/job_name_${SLURM_JOB_ID}.err"
 
 
 python3 /home/asidani/notif.py "$LOG_FILE" "$ERR_FILE"
