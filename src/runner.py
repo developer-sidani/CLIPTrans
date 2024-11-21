@@ -128,6 +128,7 @@ class Runner:
                         target_sentences.extend(raw_target_text)
 
         if is_main_process():
+            print(len(translated_sentences), len(target_sentences))
             bleu_score = sacrebleu.corpus_bleu(translated_sentences, [target_sentences]).score
             meteor_score = self.meteor.compute(predictions=translated_sentences, references=target_sentences)['meteor']
             print(f'Epoch {epoch}; Test BLEU: {bleu_score}; Test METEOR: {100 * meteor_score}')
