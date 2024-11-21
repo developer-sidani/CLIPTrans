@@ -42,7 +42,7 @@ PRETRAINED_MODELS_INFERENCE_PARAMS=(
     --src_lang en
     --tgt_lang fr
     --prefix_length 10
-    --bs 32
+    --bs 16
     --test_ds 2016 flickr
     --stage translate
     --test
