@@ -62,6 +62,8 @@ TRAIN_PARAMS_STAGE1=(
     --test_ds 2016 val
     --stage caption
     --tgt_lang fr
+    # --ct
+    # --lm model_pretrained.pth
 )
 
 

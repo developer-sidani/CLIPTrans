@@ -34,7 +34,7 @@ class Runner:
             'best_bleu_test': self.best_bleu_test
         }
         torch.save(checkpoint, name)
-        self.experiment.log_asset(file_name=name, metadata={"type": "model"})  # Log the model as an asset
+        self.experiment.log_asset(file_data=name, file_name=name, metadata={"type": "model", "epoch": epoch})  # Log the model as an asset
 
     def load_model(self, params, model, name, load_opt):
         if not os.path.exists(name) and os.path.exists(name.replace('.pth', '_1.pth')):

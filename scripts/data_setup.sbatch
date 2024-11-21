@@ -49,8 +49,8 @@ cd ../../../..
 
 send discord "Downloading the images"
 cp /home/asidani/thesis/data/flickr30k-images.tar images 
-cp /home/asidani/thesis/data/test2017.zip images
-cp /home/asidani/thesis/data/mnt_images/test_2017-flickr-images.gz images
+cp /home/asidani/thesis/data/coco/test2017.zip images
+cp /home/asidani/thesis/data/mnt_images/test_2017-flickr-images.tar.gz images
 cd images
 unzip test2017.zip
 mv test2017 test_2017_mscoco
@@ -62,14 +62,13 @@ mkdir test_2016_flickr test_2016_val
 mv ../create_test_val_flickr.py .
 
 send_discord "Creating test and validation splits"
-python create_test_val_flickr.py ../text/data/task1/image_splits/test_2016_val.txt train test_2016_val
-python create_test_val_flickr.py ../text/data/task1/image_splits/test_2016_flickr.txt train test_2016_flickr
+python3 create_test_val_flickr.py ../text/data/task1/image_splits/test_2016_val.txt train test_2016_val
+python3 create_test_val_flickr.py ../text/data/task1/image_splits/test_2016_flickr.txt train test_2016_flickr
 
 
 # Notify with log and error files
-CURRENT_DIR=$(pwd)
-LOG_FILE="${CURRENT_DIR}/logs/job_name_${SLURM_JOB_ID}.log"
-ERR_FILE="${CURRENT_DIR}/logs/job_name_${SLURM_JOB_ID}.err"
+LOG_FILE="/home/asidani/logs/job_name_${SLURM_JOB_ID}.log"
+ERR_FILE="/home/asidani/logs/job_name_${SLURM_JOB_ID}.err"
 python3 /home/asidani/notif.py "$LOG_FILE" "$ERR_FILE"
 
 # Script end
