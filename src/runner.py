@@ -71,6 +71,7 @@ class Runner:
         train_loss = 0.0
         self.optimizer.zero_grad()
         for step, batch in enumerate(tqdm(self.train_dl, desc=f'Epoch {epoch}', disable=not is_main_process())):
+            batch = {k: v.to(params['device']) for k, v in batch.items()} # Send to GPU
             batch['mbart'], batch['clip'] = send_to_cuda(batch['mbart']), send_to_cuda(batch['clip'])
             with torch.autocast(device_type='cuda'):
                 output = model(batch)

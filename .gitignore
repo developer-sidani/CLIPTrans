@@ -178,4 +178,4 @@ data/preprocessed/*
 .env
 data/*
 models/*
-log/*
+logs/*
