@@ -24,8 +24,8 @@ which nvidia-smi || echo "nvidia-smi not found"
 nvidia-smi || echo "Unable to run nvidia-smi"  
 
 # Select GPU with least memory usage
-# export CUDA_VISIBLE_DEVICES=$(nvidia-smi --query-gpu=memory.free --format=csv,noheader,nounits | awk '{ print NR-1 " " $1 }' | sort -k2 -n | tail -n1 | awk '{ print $1 }')
-# echo "[SCRIPT]: Selected GPU ID: $CUDA_VISIBLE_DEVICES"
+export CUDA_VISIBLE_DEVICES=$(nvidia-smi --query-gpu=memory.free --format=csv,noheader,nounits | awk '{ print NR-1 " " $1 }' | sort -k2 -n | tail -n1 | awk '{ print $1 }')
+echo "[SCRIPT]: Selected GPU ID: $CUDA_VISIBLE_DEVICES"
 
 # 2 Activate the virtual environment
 source activate /home/asidani/.conda/envs/cliptrans
@@ -96,8 +96,8 @@ cd /home/asidani/CLIPTrans/
 
 send_discord "[${SLURM_JOB_ID}]: Executing the python script for stage 1"
 
-# /home/asidani/.conda/envs/cliptrans/bin/python3 src/main.py "${TRAIN_PARAMS_STAGE1[@]}"
-/home/asidani/.conda/envs/cliptrans/bin/python3 -m torch.distributed.run --nproc_per_node 4 src/main.py "${TRAIN_PARAMS_STAGE1_TEMP[@]}"
+/home/asidani/.conda/envs/cliptrans/bin/python3 src/main.py "${TRAIN_PARAMS_STAGE1[@]}"
+# /home/asidani/.conda/envs/cliptrans/bin/python3 -m torch.distributed.run --nproc_per_node 4 src/main.py "${TRAIN_PARAMS_STAGE1_TEMP[@]}"
 send_discord "[${SLURM_JOB_ID}]: Stage 1 ended"
 
 send_discord "[${SLURM_JOB_ID}]: Executing the python script for stage 2"
