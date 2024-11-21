@@ -2,7 +2,7 @@
 #SBATCH --time=26:00:00
 #SBATCH --ntasks=1
 #SBATCH --partition=cuda
-#SBATCH --gres=gpu:all
+#SBATCH --gres=gpu:1
 #SBATCH --job-name=tst
 #SBATCH --mem=40GB
 #SBATCH --output=/home/asidani/logs/job_name_%j.log
