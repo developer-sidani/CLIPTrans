@@ -108,9 +108,11 @@ class Runner:
                 batch['clip'] = send_to_cuda(batch['clip'])
                 batch['mbart'] = send_to_cuda(batch['mbart'])
                 raw_target_text = batch.pop('raw')
+                print(raw_target_text)
                 with torch.autocast(device_type='cuda'):
                     output = model(batch, mode='test')
                 output = tokenizer.batch_decode(output, skip_special_tokens=True)
+                print(output)
                 if params.num_gpus > 1:
                     output_collated = [None for _ in range(params.num_gpus)]
                     dist.all_gather_object(output_collated, output)

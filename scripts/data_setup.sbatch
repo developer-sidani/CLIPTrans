@@ -65,8 +65,8 @@ cd images
 # mv ../create_test_val_flickr.py .
 
 send_discord "Creating test and validation splits"
-python3 create_test_val_flickr.py /home/asidani/CLIPTrans/data/multi30k/text/data/task1/image_splits/test_2016_val.txt train test_2016_val
-python3 create_test_val_flickr.py /home/asidani/CLIPTrans/data/multi30k/text/data/task1/image_splits/test_2016_flickr.txt train test_2016_flickr
+python3 create_test_val_flickr.py /home/asidani/CLIPTrans/data/multi30k/text/data/task1/image_splits/test_2016_val.txt /home/asidani/CLIPTrans/data/multi30k/images/train /home/asidani/CLIPTrans/data/multi30k/images/test_2016_val
+python3 create_test_val_flickr.py /home/asidani/CLIPTrans/data/multi30k/text/data/task1/image_splits/test_2016_flickr.txt /home/asidani/CLIPTrans/data/multi30k/images/train /home/asidani/CLIPTrans/data/multi30k/images/test_2016_flickr
 
 
 # Notify with log and error files

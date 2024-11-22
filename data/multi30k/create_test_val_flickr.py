@@ -8,6 +8,7 @@ def main(list_file_path, source_folder, destination_folder):
             file_name = line.strip()
 
             # Check if the file exists before moving
+            file_name = os.path.join(source_folder, file_name)
             if os.path.isfile(file_name):
                 # Use os.path.basename to get the filename without the path
                 file_name_only = os.path.basename(file_name)
