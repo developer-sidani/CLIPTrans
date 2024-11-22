@@ -52,6 +52,8 @@ cd /home/asidani/CLIPTrans/data/multi30k
 # cp /home/asidani/thesis/data/coco/test2017.zip images
 # cp /home/asidani/thesis/data/mnt_images/test_2017-flickr-images.tar.gz images
 cd images
+rm -rf flickr30k-images
+send_discord "Folder removed"
 # unzip test2017.zip
 # mv test2017 test_2017_mscoco
 # tar -xvzf test_2017-flickr-images.tar.gz
