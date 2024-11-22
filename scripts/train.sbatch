@@ -66,17 +66,6 @@ TRAIN_PARAMS_STAGE1=(
     # --lm model_pretrained.pth
 )
 
-TRAIN_PARAMS_STAGE1_TEMP=(
-     --num_gpus 4 
-     --mn multi30k 
-     --prefix_length 10 
-     --bs 32 
-     --update_count 4 
-     --lr 1e-5 
-     --test_ds 2016 val 
-     --stage caption 
-     --tgt_lang fr
-)
 TRAIN_PARAMS_STAGE2=(
     --num_gpus 1 
     --mn multi30k 
