@@ -52,21 +52,21 @@ cd /home/asidani/CLIPTrans/data/multi30k
 # cp /home/asidani/thesis/data/coco/test2017.zip images
 # cp /home/asidani/thesis/data/mnt_images/test_2017-flickr-images.tar.gz images
 cd images
-rm -rf flickr30k-images
-send_discord "Folder removed"
+# rm -rf flickr30k-images
+# send_discord "Folder removed"
 # unzip test2017.zip
 # mv test2017 test_2017_mscoco
 # tar -xvzf test_2017-flickr-images.tar.gz
 # mv task1 test_2017_flickr
-tar -xf flickr30k-images.tar
-send_discord "Extracted the images!"
-mv flickr30k-images train
+# tar -xf flickr30k-images.tar
+# send_discord "Extracted the images!"
+# mv flickr30k-images train
 # mkdir test_2016_flickr test_2016_val
 # mv ../create_test_val_flickr.py .
 
 send_discord "Creating test and validation splits"
-python3 create_test_val_flickr.py ../text/data/task1/image_splits/test_2016_val.txt train test_2016_val
-python3 create_test_val_flickr.py ../text/data/task1/image_splits/test_2016_flickr.txt train test_2016_flickr
+python3 create_test_val_flickr.py /home/asidani/CLIPTrans/data/multi30k/text/data/task1/image_splits/test_2016_val.txt train test_2016_val
+python3 create_test_val_flickr.py /home/asidani/CLIPTrans/data/multi30k/text/data/task1/image_splits/test_2016_flickr.txt train test_2016_flickr
 
 
 # Notify with log and error files
