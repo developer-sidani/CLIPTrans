@@ -104,6 +104,9 @@ class Runner:
         translated_sentences, target_sentences = [], []
         tokenizer.tgt_lang = get_lang_code(params.tgt_lang)
         with torch.no_grad():
+            for batch_idx, batch in enumerate(self.test_dl):
+                print(f"[DEBUG] Batch {batch_idx}: {batch}")
+                break  # Stop after one batch for inspection
             for i, batch in enumerate(tqdm(self.test_dl, desc=f'Epoch {epoch}', disable=not is_main_process())):
                 batch['clip'] = send_to_cuda(batch['clip'])
                 batch['mbart'] = send_to_cuda(batch['mbart'])
@@ -112,7 +115,6 @@ class Runner:
                 with torch.autocast(device_type='cuda'):
                     output = model(batch, mode='test')
                 output = tokenizer.batch_decode(output, skip_special_tokens=True)
-                print(output)
                 if params.num_gpus > 1:
                     output_collated = [None for _ in range(params.num_gpus)]
                     dist.all_gather_object(output_collated, output)

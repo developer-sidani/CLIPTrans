@@ -118,6 +118,10 @@ def main(params):
         print('%' * 80)
         print(params)
         print('%' * 80)
+    print(f"[DEBUG] Train Dataset length: {len(train_dataset)}")
+    print(f"[DEBUG] Train Dataloader batches: {len(train_dl)}")
+    print(f"[DEBUG] Test Dataset length: {len(test_dataset)}")
+    print(f"[DEBUG] Test Dataloader batches: {len(test_dl)}")
     runner = Runner(train_dl, test_dl, params, experiment)
     runner.train(model, tokenizer, params)
 

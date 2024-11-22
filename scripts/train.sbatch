@@ -89,9 +89,9 @@ send_discord "[${SLURM_JOB_ID}]: Executing the python script for stage 1"
 # /home/asidani/.conda/envs/cliptrans/bin/python3 -m torch.distributed.run --nproc_per_node 4 src/main.py "${TRAIN_PARAMS_STAGE1_TEMP[@]}"
 send_discord "[${SLURM_JOB_ID}]: Stage 1 ended"
 
-send_discord "[${SLURM_JOB_ID}]: Executing the python script for stage 2"
-/home/asidani/.conda/envs/cliptrans/bin/python3 src/main.py "${TRAIN_PARAMS_STAGE2[@]}"
-send_discord "[${SLURM_JOB_ID}]: Stage 2 ended"
+# send_discord "[${SLURM_JOB_ID}]: Executing the python script for stage 2"
+# /home/asidani/.conda/envs/cliptrans/bin/python3 src/main.py "${TRAIN_PARAMS_STAGE2[@]}"
+# send_discord "[${SLURM_JOB_ID}]: Stage 2 ended"
 
 
 

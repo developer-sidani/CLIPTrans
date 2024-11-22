@@ -58,6 +58,12 @@ class MultiModalDataset(Dataset):
 		self.mask_inputs = mask_inputs
 		self.mask_token = mask_token
 		self.use_clip_tok = params.unfreeze_clip
+		print(f"[DEBUG] Initialized dataset with: ")
+		print(f"  is_pretraining: {self.is_pretraining}")
+		print(f"  clip_embs size: {len(clip_embs) if not isinstance(clip_embs, dict) else {k: len(v) for k, v in clip_embs.items()}}")
+		print(f"  tok_data keys: {list(tok_data.keys())}")
+		print(f"  raw_data keys: {list(raw_data.keys())}")
+		print(f"  Dataset length: {self.length}")
 		if self.is_pretraining:
 			self.input_tok  = tok_data
 			self.output_raw = raw_data
@@ -91,10 +97,13 @@ class MultiModalDataset(Dataset):
 	
 	def __getitem__(self, idx):
 		batch = []
+		print(f"[DEBUG] Fetching idx: {idx}")
 		if self.is_pretraining:
+			print(f"[DEBUG] Pretraining batch: {batch}")
 			if hasattr(self, 'caption_lang'):
 				lang = self.caption_lang
 			else:
+				print(f"[DEBUG] Fine-tuning batch: {batch}")
 				lang_idx = -1
 				while idx >= self.single_length:
 					idx -= self.single_length
