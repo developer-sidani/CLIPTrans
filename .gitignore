@@ -179,3 +179,4 @@ data/preprocessed/*
 data/*
 models/*
 logs/*
+.vscode/*

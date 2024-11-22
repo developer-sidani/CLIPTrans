@@ -63,7 +63,6 @@ class MultiModalDataset(Dataset):
 		print(f"  clip_embs size: {len(clip_embs) if not isinstance(clip_embs, dict) else {k: len(v) for k, v in clip_embs.items()}}")
 		print(f"  tok_data keys: {list(tok_data.keys())}")
 		print(f"  raw_data keys: {list(raw_data.keys())}")
-		print(f"  Dataset length: {self.length}")
 		if self.is_pretraining:
 			self.input_tok  = tok_data
 			self.output_raw = raw_data
