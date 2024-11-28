@@ -3,7 +3,7 @@ import sys
 sys.path.append('src/models')
 sys.path.append('src/utils')
 
-from comet_ml import Experiment 
+from comet_ml import Experiment, ExperimentConfig
 import torch
 import argparse
 from dotenv import load_dotenv
@@ -46,7 +46,7 @@ def main(params):
     comet_api_key = os.getenv('COMET_API_KEY')
     comet_project = os.getenv('COMET_PROJECT_NAME')
     comet_workspace = os.getenv('COMET_WORKSPACE')
-    experiment = Experiment(api_key=comet_api_key, project_name=comet_project, workspace=comet_workspace)
+    experiment = Experiment(api_key=comet_api_key, project_name=comet_project, workspace=comet_workspace, experiment_config=ExperimentConfig(name=f"{params.mn}_{params.stage}_{params.tgt_lang}", tags=[params.stage, params.tgt_lang]))
     experiment.log_parameters(vars(params))  # Log all parameters
     
     if params.num_gpus > 1:
