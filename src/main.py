@@ -2,9 +2,6 @@
 import sys
 sys.path.append('src/models')
 sys.path.append('src/utils')
-sys.path.append('~/')  # Add the path to the directory containing message.py
-
-from message import send_text_to_discord
 
 from comet_ml import Experiment 
 import torch
@@ -51,7 +48,6 @@ def main(params):
     comet_workspace = os.getenv('COMET_WORKSPACE')
     experiment = Experiment(api_key=comet_api_key, project_name=comet_project, workspace=comet_workspace)
     experiment.log_parameters(vars(params))  # Log all parameters
-    send_text_to_discord(f"[DEBUG]: EXPERIMENT PATH: {experiment.url}")
     
     if params.num_gpus > 1:
         init_distributed()
