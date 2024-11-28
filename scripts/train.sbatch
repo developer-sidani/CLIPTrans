@@ -46,7 +46,7 @@ PRETRAINED_MODELS_INFERENCE_PARAMS=(
     --test_ds 2016 flickr
     --stage translate
     --test
-    --lm multi30k-en-fr/m30k_tiny_en-fr.pt
+    --lm model_pretrained.pth
 )
 
 
@@ -83,18 +83,18 @@ TRAIN_PARAMS_STAGE2=(
 
 cd /home/asidani/CLIPTrans/
 
-send_discord "[${SLURM_JOB_ID}]: Executing the python script for stage 1"
+# send_discord "[${SLURM_JOB_ID}]: Executing the python script for stage 1"
 
-/home/asidani/.conda/envs/cliptrans/bin/python3 src/main.py "${TRAIN_PARAMS_STAGE1[@]}"
-# /home/asidani/.conda/envs/cliptrans/bin/python3 -m torch.distributed.run --nproc_per_node 4 src/main.py "${TRAIN_PARAMS_STAGE1_TEMP[@]}"
-send_discord "[${SLURM_JOB_ID}]: Stage 1 ended"
+# /home/asidani/.conda/envs/cliptrans/bin/python3 src/main.py "${TRAIN_PARAMS_STAGE1[@]}"
+# send_discord "[${SLURM_JOB_ID}]: Stage 1 ended"
 
 # send_discord "[${SLURM_JOB_ID}]: Executing the python script for stage 2"
 # /home/asidani/.conda/envs/cliptrans/bin/python3 src/main.py "${TRAIN_PARAMS_STAGE2[@]}"
 # send_discord "[${SLURM_JOB_ID}]: Stage 2 ended"
 
-
-
+send discord "[${SLURM_JOB_ID}]: Executing the python script for inference"
+/home/asidani/.conda/envs/cliptrans/bin/python3 src/main.py "${PRETRAINED_MODELS_INFERENCE_PARAMS[@]}"
+send discord "[${SLURM_JOB_ID}]: Inference ended"
 
 # Define the full path for log and error files
 LOG_FILE="/home/asidani/logs/job_name_${SLURM_JOB_ID}.log"
