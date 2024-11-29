@@ -60,6 +60,9 @@ def main(params):
         exit()
     train_dataset_inputs = {'params': params, 'tok_data': train_tok, 'raw_data': train_texts, 'clip_tok_data': train_tok_mclip}
     test_dataset_inputs = {'params': params, 'tok_data': test_tok, 'raw_data': test_texts, 'clip_tok_data': test_tok_mclip}
+    print(f"[DEBUG] Train INPUT: {len(train_dataset_inputs)}")
+    print(f"[DEBUG] TEST INPUT: {len(test_dataset_inputs)}")
+
     stage_message = {
                         'caption': 'Pretraining on Image Captions', 
                         'text_recon': 'Pretraining on Text Reconstruction', 
