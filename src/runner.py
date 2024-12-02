@@ -71,6 +71,7 @@ class Runner:
         train_loss = 0.0
         self.optimizer.zero_grad()
         for step, batch in enumerate(tqdm(self.train_dl, desc=f'Epoch {epoch}', disable=not is_main_process())):
+            self.experiment.log_metric("epoch", epoch, step=epoch)
             batch['mbart'], batch['clip'] = send_to_cuda(batch['mbart']), send_to_cuda(batch['clip'])
             with torch.autocast(device_type='cuda'):
                 output = model(batch)
@@ -172,5 +173,5 @@ class Runner:
                 self.train_dl.sampler.set_epoch(epoch)
                 self.test_dl.sampler.set_epoch(epoch)
             self.fit_one_epoch(model, tokenizer, params, epoch+1)
-            if params.test:
-                self.test(model, tokenizer, params, epoch+1)
+            # if params.test:
+            self.test(model, tokenizer, params, epoch+1)

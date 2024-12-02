@@ -36,65 +36,100 @@ echo "[SCRIPT]: Starting the run"
 
 send_discord "[${SLURM_JOB_ID}]: Starting the run"
 
-PRETRAINED_MODELS_INFERENCE_PARAMS=(
-    --num_gpus 1
-    --mn multi30k
-    --src_lang en
-    --tgt_lang de
-    --prefix_length 10
-    --bs 32
-    --test_ds 2016 flickr
-    --stage caption
-    --test
-    --lm model_pretrained.pth
-)
+# PRETRAINED_MODELS_INFERENCE_PARAMS=(
+#     --num_gpus 1
+#     --mn multi30k
+#     --src_lang en
+#     --tgt_lang de
+#     --prefix_length 10
+#     --bs 32
+#     --test_ds 2016 flickr
+#     --stage caption
+#     --test
+#     --lm model_pretrained.pth
+# )
 
 
 # --num_gpus 1 --mn multi30k --prefix_length 10 --bs 32 --update_count 4 --lr 1e-5 --test_ds 2016 val --stage caption --tgt_lang fr
 
-TRAIN_PARAMS_STAGE1=(
+DE_TRAIN_PARAMS_STAGE1=(
     --num_gpus 1
     --mn multi30k
     --prefix_length 10
     --bs 32
     --update_count 4
     --lr 1e-5
-    --test_ds 2016 val
+    --test_ds 2016 flickr
     --stage caption
     --tgt_lang de
     # --ct
     # --lm model_pretrained.pth
 )
 
-TRAIN_PARAMS_STAGE2=(
+DE_TRAIN_PARAMS_STAGE2=(
     --num_gpus 1 
     --mn multi30k 
     --prefix_length 10 
     --bs 32 
     --update_count 4 
     --lr 1e-5 
-    --test_ds 2016 val 
+    --test_ds 2016 flickr 
+    --stage translate 
+    --tgt_lang de 
+    --lm model_pretrained.pth
+)
+
+FR_TRAIN_PARAMS_STAGE1=(
+    --num_gpus 1
+    --mn multi30k
+    --prefix_length 10
+    --bs 32
+    --update_count 4
+    --lr 1e-5
+    --test_ds 2016 flickr
+    --stage caption
+    --tgt_lang fr
+    # --ct
+    # --lm model_pretrained.pth
+)
+
+FR_TRAIN_PARAMS_STAGE2=(
+    --num_gpus 1 
+    --mn multi30k 
+    --prefix_length 10 
+    --bs 32 
+    --update_count 4 
+    --lr 1e-5 
+    --test_ds 2016 flickr 
     --stage translate 
     --tgt_lang fr 
     --lm model_pretrained.pth
 )
 
-
-
 cd /home/asidani/CLIPTrans/
 
-# send_discord "[${SLURM_JOB_ID}]: Executing the python script for stage 1"
+send_discord "[${SLURM_JOB_ID}]: Executing the python script for stage 1 DE"
 
-# /home/asidani/.conda/envs/cliptrans/bin/python3 src/main.py "${TRAIN_PARAMS_STAGE1[@]}"
-# send_discord "[${SLURM_JOB_ID}]: Stage 1 ended"
+/home/asidani/.conda/envs/cliptrans/bin/python3 src/main.py "${DE_TRAIN_PARAMS_STAGE1[@]}"
+send_discord "[${SLURM_JOB_ID}]: Stage 1 DE ended"
 
-# send_discord "[${SLURM_JOB_ID}]: Executing the python script for stage 2"
-# /home/asidani/.conda/envs/cliptrans/bin/python3 src/main.py "${TRAIN_PARAMS_STAGE2[@]}"
-# send_discord "[${SLURM_JOB_ID}]: Stage 2 ended"
+send_discord "[${SLURM_JOB_ID}]: Executing the python script for stage 2 DE"
+/home/asidani/.conda/envs/cliptrans/bin/python3 src/main.py "${DE_TRAIN_PARAMS_STAGE2[@]}"
+send_discord "[${SLURM_JOB_ID}]: Stage 2 DE ended"
 
-send discord "[${SLURM_JOB_ID}]: Executing the python script for inference"
-/home/asidani/.conda/envs/cliptrans/bin/python3 src/main.py "${PRETRAINED_MODELS_INFERENCE_PARAMS[@]}"
-send discord "[${SLURM_JOB_ID}]: Inference ended"
+
+send_discord "[${SLURM_JOB_ID}]: Executing the python script for stage 1 FR"
+
+/home/asidani/.conda/envs/cliptrans/bin/python3 src/main.py "${FR_TRAIN_PARAMS_STAGE1[@]}"
+send_discord "[${SLURM_JOB_ID}]: Stage 1 FR ended"
+
+send_discord "[${SLURM_JOB_ID}]: Executing the python script for stage 2 FR"
+/home/asidani/.conda/envs/cliptrans/bin/python3 src/main.py "${FR_TRAIN_PARAMS_STAGE2[@]}"
+send_discord "[${SLURM_JOB_ID}]: Stage 2 FR ended"
+
+# send discord "[${SLURM_JOB_ID}]: Executing the python script for inference"
+# /home/asidani/.conda/envs/cliptrans/bin/python3 src/main.py "${PRETRAINED_MODELS_INFERENCE_PARAMS[@]}"
+# send discord "[${SLURM_JOB_ID}]: Inference ended"
 
 # Define the full path for log and error files
 LOG_FILE="/home/asidani/logs/job_name_${SLURM_JOB_ID}.log"
