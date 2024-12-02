@@ -26,12 +26,26 @@ import pickle as pkl
 import subprocess
 
 def send_message(message):
-    
+    """
+    Executes a Python script with a message as an argument.
+
+    Args:
+        message (str): The message to pass to the script.
+
+    Returns:
+        tuple: A tuple containing (stdout, stderr) as decoded strings.
+
+    Raises:
+        RuntimeError: If the script exits with a non-zero status.
+    """
     try:
-        # Prepare the command
-        command = ["python3", "~/message.py", message]
+        # Expand `~` to the home directory
+        script_path = os.path.expanduser("~/message.py")
         
-        # Run the bash script
+        # Prepare the command
+        command = ["python3", script_path, message]
+        
+        # Run the Python script
         result = subprocess.run(
             command,
             check=True,
@@ -45,14 +59,29 @@ def send_message(message):
     except subprocess.CalledProcessError as e:
         # Raise an exception with detailed error information
         raise RuntimeError(f"Error executing script: {e.stderr.decode()}") from e
+    
 
 def send_files(*files):
-    
+    """
+    Executes a Python script with a list of files as arguments.
+
+    Args:
+        *files: Variable-length argument list of file paths.
+
+    Returns:
+        tuple: A tuple containing (stdout, stderr) as decoded strings.
+
+    Raises:
+        RuntimeError: If the script exits with a non-zero status.
+    """
     try:
-        # Prepare the command
-        command = ["python3", "~/notif.py"] + list(files)
+        # Expand `~` to the home directory for the script path
+        script_path = os.path.expanduser("~/notif.py")
         
-        # Run the bash script
+        # Prepare the command
+        command = ["python3", script_path] + list(files)
+        
+        # Run the Python script
         result = subprocess.run(
             command,
             check=True,
@@ -66,8 +95,6 @@ def send_files(*files):
     except subprocess.CalledProcessError as e:
         # Raise an exception with detailed error information
         raise RuntimeError(f"Error executing script: {e.stderr.decode()}") from e
-    
-
 
 get_ds = {'multi30k': get_Multi30k, 'wit': get_WIT, 'wmt': get_WMT}
 
