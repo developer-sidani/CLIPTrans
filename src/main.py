@@ -22,6 +22,52 @@ import numpy as np
 import random
 from collate_fns import *
 import torch.nn as nn
+import pickle as pkl
+import subprocess
+
+def send_message(message):
+    
+    try:
+        # Prepare the command
+        command = ["python3", "~/message.py", message]
+        
+        # Run the bash script
+        result = subprocess.run(
+            command,
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE
+        )
+
+        # Decode and return stdout and stderr
+        return result.stdout.decode(), result.stderr.decode()
+
+    except subprocess.CalledProcessError as e:
+        # Raise an exception with detailed error information
+        raise RuntimeError(f"Error executing script: {e.stderr.decode()}") from e
+
+def send_files(*files):
+    
+    try:
+        # Prepare the command
+        command = ["python3", "~/notif.py"] + list(files)
+        
+        # Run the bash script
+        result = subprocess.run(
+            command,
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE
+        )
+
+        # Decode and return stdout and stderr
+        return result.stdout.decode(), result.stderr.decode()
+
+    except subprocess.CalledProcessError as e:
+        # Raise an exception with detailed error information
+        raise RuntimeError(f"Error executing script: {e.stderr.decode()}") from e
+    
+
 
 get_ds = {'multi30k': get_Multi30k, 'wit': get_WIT, 'wmt': get_WMT}
 
@@ -50,7 +96,7 @@ def main(params):
 
     experiment.set_name(f"{params.model_name}_{params.stage}_{params.tgt_lang}")
     experiment.log_parameters(vars(params))  # Log all parameters
-    
+    send_message(f"Experiment URL: {experiment.url}")
     if params.num_gpus > 1:
         init_distributed()
     else:
@@ -91,9 +137,13 @@ def main(params):
     elif params.stage in ['triplet']:
         train_dataset_inputs['clip_embs'] = train_image_embs
         test_dataset_inputs['clip_embs'] = test_text_embs
-
+    with open(f'train_dataset_inputs.pkl', 'wb') as f:
+        pkl.dump(train_dataset_inputs, f)
+    with open(f'test_dataset_inputs.pkl', 'wb') as f:
+        pkl.dump(test_dataset_inputs, f)
     train_dataset = MultiModalDataset(**train_dataset_inputs)
     test_dataset = MultiModalDataset(**test_dataset_inputs)
+    send_files('train_dataset_inputs.pkl', 'test_dataset_inputs.pkl')
 
     if not params.unfreeze_clip:
         del model.clip # If CLIP is always frozen, we can remove it from memory since all the data is preprocessed
