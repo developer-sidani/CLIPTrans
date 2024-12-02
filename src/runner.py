@@ -172,4 +172,5 @@ class Runner:
                 self.train_dl.sampler.set_epoch(epoch)
                 self.test_dl.sampler.set_epoch(epoch)
             self.fit_one_epoch(model, tokenizer, params, epoch+1)
-            self.test(model, tokenizer, params, epoch+1)
+            if params.test:
+                self.test(model, tokenizer, params, epoch+1)
