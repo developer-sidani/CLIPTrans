@@ -99,7 +99,7 @@ def get_Multi30k(params, model, test = ('2017', 'mscoco'), force_pretraining = F
 
 		# Test embeddings
 		embs_f = os.path.join(datapath, f'text/data/task1/{params.image_encoder}/test_{test[0]}_{test[1]}.{lang}.pth')
-		print(f"[DEBUG]: Could not load test embeddings for {lang}: {e}")
+		# print(f"[DEBUG]: Could not load test embeddings for {lang}: {e}")
 		print(f"[DEBUG]: Creating embeddings for test_{test[0]}_{test[1]}.{lang}...")
 		text_ds = DocDataset(test_tok_mclip[lang])
 		print(f"[DEBUG]: Created dataset for test_{test[0]}_{test[1]}.{lang}, size: {len(text_ds)}")
