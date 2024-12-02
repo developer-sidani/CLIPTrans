@@ -103,7 +103,7 @@ def get_Multi30k(params, model, test = ('2017', 'mscoco'), force_pretraining = F
 		print(f"[DEBUG]: Creating embeddings for test_{test[0]}_{test[1]}.{lang}...")
 		text_ds = DocDataset(test_tok_mclip[lang])
 		print(f"[DEBUG]: Created dataset for test_{test[0]}_{test[1]}.{lang}, size: {len(text_ds)}")
-		text_dl = DataLoader(text_ds, batch_size=256, shuffle=False, num_workers=4, pin_memory=True, collate_fn=collate_texts)
+		text_dl = DataLoader(text_ds, batch_size=256, shuffle=False, num_workers=1, pin_memory=True, collate_fn=collate_texts)
 		print(f"[DEBUG]: DataLoader for test_{test[0]}_{test[1]}.{lang} created with batch size 256")
 		test_text_embs[lang] = create_embeddings(text_dl, model.clip, embs_f, f'Embedding test_{test[0]}_{test[1]}.{lang} mclip')
 		print(f"[DEBUG]: Saved test embeddings for {lang} to {embs_f}")
