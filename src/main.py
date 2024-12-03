@@ -121,7 +121,7 @@ def main(params):
     comet_workspace = os.getenv('COMET_WORKSPACE')
     experiment = Experiment(api_key=comet_api_key, project_name=comet_project, workspace=comet_workspace)
 
-    experiment.set_name(f"{params.test_ds[0]}_{params.test_ds[1]}_{params.model_name}_{params.stage}_{params.tgt_lang}")
+    experiment.set_name(f"{params.test_ds}_{params.model_name}_{params.stage}_{params.tgt_lang}")
     experiment.log_parameters(vars(params))  # Log all parameters
     send_message(f"Experiment URL: {experiment.url}")
     if params.num_gpus > 1:
