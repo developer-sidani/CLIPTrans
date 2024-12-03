@@ -121,7 +121,7 @@ def main(params):
     comet_workspace = os.getenv('COMET_WORKSPACE')
     experiment = Experiment(api_key=comet_api_key, project_name=comet_project, workspace=comet_workspace)
 
-    experiment.set_name(f"{params.model_name}_{params.stage}_{params.tgt_lang}")
+    experiment.set_name(f"{params.test_ds[0]}_{params.test_ds[1]}_{params.model_name}_{params.stage}_{params.tgt_lang}")
     experiment.log_parameters(vars(params))  # Log all parameters
     send_message(f"Experiment URL: {experiment.url}")
     if params.num_gpus > 1:
@@ -164,13 +164,13 @@ def main(params):
     elif params.stage in ['triplet']:
         train_dataset_inputs['clip_embs'] = train_image_embs
         test_dataset_inputs['clip_embs'] = test_text_embs
-    with open(f'train_dataset_inputs.pkl', 'wb') as f:
-        pkl.dump(train_dataset_inputs, f)
-    with open(f'test_dataset_inputs.pkl', 'wb') as f:
-        pkl.dump(test_dataset_inputs, f)
+    # with open(f'train_dataset_inputs.pkl', 'wb') as f:
+    #     pkl.dump(train_dataset_inputs, f)
+    # with open(f'test_dataset_inputs.pkl', 'wb') as f:
+    #     pkl.dump(test_dataset_inputs, f)
     train_dataset = MultiModalDataset(**train_dataset_inputs)
     test_dataset = MultiModalDataset(**test_dataset_inputs)
-    send_files('train_dataset_inputs.pkl', 'test_dataset_inputs.pkl')
+    # send_files('train_dataset_inputs.pkl', 'test_dataset_inputs.pkl')
 
     if not params.unfreeze_clip:
         del model.clip # If CLIP is always frozen, we can remove it from memory since all the data is preprocessed
