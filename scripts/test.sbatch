@@ -38,29 +38,125 @@ LANGS=("de" "fr")
 STAGES=("caption" "translate")
 
 # Iterate through datasets, languages, and stages
-for DS in "${DATASETS[@]}"; do
-    for LANG in "${LANGS[@]}"; do
-        for STAGE in "${STAGES[@]}"; do
-            TEST_PARAMS=(
-                --num_gpus 1
-                --mn multi30k
-                --src_lang en
-                --tgt_lang $LANG
-                --prefix_length 10
-                --bs 32
-                --test_ds "$DS"
-                --stage $STAGE
-                --test
-                --lm model_pretrained.pth
-            )
 
-            echo "[SCRIPT]: Starting test for dataset $DS, target language $LANG, stage $STAGE"
-            send_discord "[${SLURM_JOB_ID}]: Starting test for dataset $DS, target language $LANG, stage $STAGE"
+for LANG in "${LANGS[@]}"; do
+    for STAGE in "${STAGES[@]}"; do
+        TEST_PARAMS=(
+            --num_gpus 1
+            --mn multi30k
+            --src_lang en
+            --tgt_lang $LANG
+            --prefix_length 10
+            --bs 32
+            --test_ds 2016 flickr
+            --stage $STAGE
+            --test
+            --lm model_pretrained.pth
+        )
 
-            /home/asidani/.conda/envs/cliptrans/bin/python3 src/main.py "${TEST_PARAMS[@]}"
+        echo "[SCRIPT]: Starting test for dataset 2016 flickr, target language $LANG, stage $STAGE"
+        send_discord "[${SLURM_JOB_ID}]: Starting test for dataset 2016 flickr, target language $LANG, stage $STAGE"
 
-            send_discord "[${SLURM_JOB_ID}]: Finished test for dataset $DS, target language $LANG, stage $STAGE"
-        done
+        /home/asidani/.conda/envs/cliptrans/bin/python3 src/main.py "${TEST_PARAMS[@]}"
+
+        send_discord "[${SLURM_JOB_ID}]: Finished test for dataset 2016 flickr, target language $LANG, stage $STAGE"
+    done
+done
+
+for LANG in "${LANGS[@]}"; do
+    for STAGE in "${STAGES[@]}"; do
+        TEST_PARAMS=(
+            --num_gpus 1
+            --mn multi30k
+            --src_lang en
+            --tgt_lang $LANG
+            --prefix_length 10
+            --bs 32
+            --test_ds 2017 flickr
+            --stage $STAGE
+            --test
+            --lm model_pretrained.pth
+        )
+
+        echo "[SCRIPT]: Starting test for dataset 2017 flickr, target language $LANG, stage $STAGE"
+        send_discord "[${SLURM_JOB_ID}]: Starting test for dataset 2017 flickr, target language $LANG, stage $STAGE"
+
+        /home/asidani/.conda/envs/cliptrans/bin/python3 src/main.py "${TEST_PARAMS[@]}"
+
+        send_discord "[${SLURM_JOB_ID}]: Finished test for dataset 2017 flickr, target language $LANG, stage $STAGE"
+    done
+done
+
+for LANG in "${LANGS[@]}"; do
+    for STAGE in "${STAGES[@]}"; do
+        TEST_PARAMS=(
+            --num_gpus 1
+            --mn multi30k
+            --src_lang en
+            --tgt_lang $LANG
+            --prefix_length 10
+            --bs 32
+            --test_ds 2018 flickr
+            --stage $STAGE
+            --test
+            --lm model_pretrained.pth
+        )
+
+        echo "[SCRIPT]: Starting test for dataset 2018 flickr, target language $LANG, stage $STAGE"
+        send_discord "[${SLURM_JOB_ID}]: Starting test for dataset 2018 flickr, target language $LANG, stage $STAGE"
+
+        /home/asidani/.conda/envs/cliptrans/bin/python3 src/main.py "${TEST_PARAMS[@]}"
+
+        send_discord "[${SLURM_JOB_ID}]: Finished test for dataset 2018 flickr, target language $LANG, stage $STAGE"
+    done
+done
+
+
+for LANG in "${LANGS[@]}"; do
+    for STAGE in "${STAGES[@]}"; do
+        TEST_PARAMS=(
+            --num_gpus 1
+            --mn multi30k
+            --src_lang en
+            --tgt_lang $LANG
+            --prefix_length 10
+            --bs 32
+            --test_ds 2018 flickr
+            --stage $STAGE
+            --test
+            --lm model_pretrained.pth
+        )
+
+        echo "[SCRIPT]: Starting test for dataset 2018 flickr, target language $LANG, stage $STAGE"
+        send_discord "[${SLURM_JOB_ID}]: Starting test for dataset 2018 flickr, target language $LANG, stage $STAGE"
+
+        /home/asidani/.conda/envs/cliptrans/bin/python3 src/main.py "${TEST_PARAMS[@]}"
+
+        send_discord "[${SLURM_JOB_ID}]: Finished test for dataset 2018 flickr, target language $LANG, stage $STAGE"
+    done
+done
+
+for LANG in "${LANGS[@]}"; do
+    for STAGE in "${STAGES[@]}"; do
+        TEST_PARAMS=(
+            --num_gpus 1
+            --mn multi30k
+            --src_lang en
+            --tgt_lang $LANG
+            --prefix_length 10
+            --bs 32
+            --test_ds 2017 mscoco
+            --stage $STAGE
+            --test
+            --lm model_pretrained.pth
+        )
+
+        echo "[SCRIPT]: Starting test for dataset 2017 mscoco, target language $LANG, stage $STAGE"
+        send_discord "[${SLURM_JOB_ID}]: Starting test for dataset 2017 mscoco, target language $LANG, stage $STAGE"
+
+        /home/asidani/.conda/envs/cliptrans/bin/python3 src/main.py "${TEST_PARAMS[@]}"
+
+        send_discord "[${SLURM_JOB_ID}]: Finished test for dataset 2017 mscoco, target language $LANG, stage $STAGE"
     done
 done
 
