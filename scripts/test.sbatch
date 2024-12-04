@@ -33,7 +33,6 @@ source activate /home/asidani/.conda/envs/cliptrans
 cd /home/asidani/CLIPTrans/
 # 3 Define parameters for testing
 
-DATASETS=("2016 flickr" "2017 flickr" "2018 flickr" "2017 mscoco")
 LANGS=("de" "fr")
 STAGES=("caption" "translate")
 
@@ -48,18 +47,18 @@ for LANG in "${LANGS[@]}"; do
             --tgt_lang $LANG
             --prefix_length 10
             --bs 32
-            --test_ds 2018 flickr
+            --test_ds 2017 mscoco
             --stage $STAGE
             --test
             --lm model_pretrained.pth
         )
 
-        echo "[SCRIPT]: Starting test for dataset 2018 flickr, target language $LANG, stage $STAGE"
-        send_discord "[${SLURM_JOB_ID}]: Starting test for dataset 2018 flickr, target language $LANG, stage $STAGE"
+        echo "[SCRIPT]: Starting test for dataset 2017 mscoco, target language $LANG, stage $STAGE"
+        send_discord "[${SLURM_JOB_ID}]: Starting test for dataset 2017 mscoco, target language $LANG, stage $STAGE"
 
         /home/asidani/.conda/envs/cliptrans/bin/python3 src/main.py "${TEST_PARAMS[@]}"
 
-        send_discord "[${SLURM_JOB_ID}]: Finished test for dataset 2018 flickr, target language $LANG, stage $STAGE"
+        send_discord "[${SLURM_JOB_ID}]: Finished test for dataset 2017 mscoco, target language $LANG, stage $STAGE"
     done
 done
 
