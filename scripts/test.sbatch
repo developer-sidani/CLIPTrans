@@ -33,7 +33,7 @@ source activate /home/asidani/.conda/envs/cliptrans
 cd /home/asidani/CLIPTrans/
 # 3 Define parameters for testing
 
-LANGS=("de" "fr")
+LANGS=("cs")
 STAGES=("caption" "translate")
 
 # Iterate through datasets, languages, and stages
