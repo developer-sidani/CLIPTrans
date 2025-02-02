@@ -33,7 +33,7 @@ source activate /home/asidani/.conda/envs/cliptrans
 cd /home/asidani/CLIPTrans/
 # 3 Define parameters for testing
 
-LANGS=("cs")
+LANGS=("en" "de")
 STAGES=("caption" "translate")
 
 # Iterate through datasets, languages, and stages
@@ -62,29 +62,29 @@ for LANG in "${LANGS[@]}"; do
     done
 done
 
-for LANG in "${LANGS[@]}"; do
-    for STAGE in "${STAGES[@]}"; do
-        TEST_PARAMS=(
-            --num_gpus 1
-            --mn multi30k
-            --src_lang en
-            --tgt_lang $LANG
-            --prefix_length 10
-            --bs 32
-            --test_ds 2017 mscoco
-            --stage $STAGE
-            --test
-            --lm model_pretrained.pth
-        )
+# for LANG in "${LANGS[@]}"; do
+#     for STAGE in "${STAGES[@]}"; do
+#         TEST_PARAMS=(
+#             --num_gpus 1
+#             --mn multi30k
+#             --src_lang en
+#             --tgt_lang $LANG
+#             --prefix_length 10
+#             --bs 32
+#             --test_ds 2017 mscoco
+#             --stage $STAGE
+#             --test
+#             --lm model_pretrained.pth
+#         )
 
-        echo "[SCRIPT]: Starting test for dataset 2017 mscoco, target language $LANG, stage $STAGE"
-        send_discord "[${SLURM_JOB_ID}]: Starting test for dataset 2017 mscoco, target language $LANG, stage $STAGE"
+#         echo "[SCRIPT]: Starting test for dataset 2017 mscoco, target language $LANG, stage $STAGE"
+#         send_discord "[${SLURM_JOB_ID}]: Starting test for dataset 2017 mscoco, target language $LANG, stage $STAGE"
 
-        /home/asidani/.conda/envs/cliptrans/bin/python3 src/main.py "${TEST_PARAMS[@]}"
+#         /home/asidani/.conda/envs/cliptrans/bin/python3 src/main.py "${TEST_PARAMS[@]}"
 
-        send_discord "[${SLURM_JOB_ID}]: Finished test for dataset 2017 mscoco, target language $LANG, stage $STAGE"
-    done
-done
+#         send_discord "[${SLURM_JOB_ID}]: Finished test for dataset 2017 mscoco, target language $LANG, stage $STAGE"
+#     done
+# done
 
 # Define the full path for log and error files
 LOG_FILE="/home/asidani/logs/job_name_${SLURM_JOB_ID}.log"
