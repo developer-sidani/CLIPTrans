@@ -100,7 +100,7 @@ FR_TRAIN_PARAMS_STAGE2=(
     --bs 32 
     --update_count 4 
     --lr 1e-5 
-    --test_ds 2016 mscoco 
+    --test_ds 2017 mscoco 
     --stage translate 
     --tgt_lang fr 
     --lm model_pretrained.pth
@@ -108,24 +108,24 @@ FR_TRAIN_PARAMS_STAGE2=(
 
 cd /home/asidani/CLIPTrans/
 
-send_discord "[${SLURM_JOB_ID}]: Executing the python script for stage 1 DE"
+# send_discord "[${SLURM_JOB_ID}]: Executing the python script for stage 1 DE"
 
-/home/asidani/.conda/envs/cliptrans/bin/python3 src/main.py "${CS_TRAIN_PARAMS_STAGE1[@]}"
-send_discord "[${SLURM_JOB_ID}]: Stage 1 DE ended"
+# /home/asidani/.conda/envs/cliptrans/bin/python3 src/main.py "${CS_TRAIN_PARAMS_STAGE1[@]}"
+# send_discord "[${SLURM_JOB_ID}]: Stage 1 DE ended"
 
-send_discord "[${SLURM_JOB_ID}]: Executing the python script for stage 2 DE"
-/home/asidani/.conda/envs/cliptrans/bin/python3 src/main.py "${CS_TRAIN_PARAMS_STAGE2[@]}"
-send_discord "[${SLURM_JOB_ID}]: Stage 2 DE ended"
+# send_discord "[${SLURM_JOB_ID}]: Executing the python script for stage 2 DE"
+# /home/asidani/.conda/envs/cliptrans/bin/python3 src/main.py "${CS_TRAIN_PARAMS_STAGE2[@]}"
+# send_discord "[${SLURM_JOB_ID}]: Stage 2 DE ended"
 
 
-# send_discord "[${SLURM_JOB_ID}]: Executing the python script for stage 1 FR"
+send_discord "[${SLURM_JOB_ID}]: Executing the python script for stage 1 FR"
 
-# /home/asidani/.conda/envs/cliptrans/bin/python3 src/main.py "${FR_TRAIN_PARAMS_STAGE1[@]}"
-# send_discord "[${SLURM_JOB_ID}]: Stage 1 FR ended"
+/home/asidani/.conda/envs/cliptrans/bin/python3 src/main.py "${FR_TRAIN_PARAMS_STAGE1[@]}"
+send_discord "[${SLURM_JOB_ID}]: Stage 1 FR ended"
 
-# send_discord "[${SLURM_JOB_ID}]: Executing the python script for stage 2 FR"
-# /home/asidani/.conda/envs/cliptrans/bin/python3 src/main.py "${FR_TRAIN_PARAMS_STAGE2[@]}"
-# send_discord "[${SLURM_JOB_ID}]: Stage 2 FR ended"
+send_discord "[${SLURM_JOB_ID}]: Executing the python script for stage 2 FR"
+/home/asidani/.conda/envs/cliptrans/bin/python3 src/main.py "${FR_TRAIN_PARAMS_STAGE2[@]}"
+send_discord "[${SLURM_JOB_ID}]: Stage 2 FR ended"
 
 # send discord "[${SLURM_JOB_ID}]: Executing the python script for inference"
 # /home/asidani/.conda/envs/cliptrans/bin/python3 src/main.py "${PRETRAINED_MODELS_INFERENCE_PARAMS[@]}"
