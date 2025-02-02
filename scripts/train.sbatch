@@ -59,9 +59,9 @@ CS_TRAIN_PARAMS_STAGE1=(
     --bs 32
     --update_count 4
     --lr 1e-5
-    --test_ds 2016 flickr
+    --test_ds 2017 mscoco
     --stage caption
-    --tgt_lang cs
+    --tgt_lang de
     # --ct
     # --lm model_pretrained.pth
 )
@@ -73,9 +73,9 @@ CS_TRAIN_PARAMS_STAGE2=(
     --bs 32 
     --update_count 4 
     --lr 1e-5 
-    --test_ds 2016 flickr 
+    --test_ds 2017 mscoco 
     --stage translate 
-    --tgt_lang cs 
+    --tgt_lang de 
     --lm model_pretrained.pth
 )
 
@@ -86,7 +86,7 @@ FR_TRAIN_PARAMS_STAGE1=(
     --bs 32
     --update_count 4
     --lr 1e-5
-    --test_ds 2016 flickr
+    --test_ds 2017 mscoco
     --stage caption
     --tgt_lang fr
     # --ct
@@ -100,7 +100,7 @@ FR_TRAIN_PARAMS_STAGE2=(
     --bs 32 
     --update_count 4 
     --lr 1e-5 
-    --test_ds 2016 flickr 
+    --test_ds 2016 mscoco 
     --stage translate 
     --tgt_lang fr 
     --lm model_pretrained.pth
@@ -108,14 +108,14 @@ FR_TRAIN_PARAMS_STAGE2=(
 
 cd /home/asidani/CLIPTrans/
 
-send_discord "[${SLURM_JOB_ID}]: Executing the python script for stage 1 CS"
+send_discord "[${SLURM_JOB_ID}]: Executing the python script for stage 1 DE"
 
 /home/asidani/.conda/envs/cliptrans/bin/python3 src/main.py "${CS_TRAIN_PARAMS_STAGE1[@]}"
-send_discord "[${SLURM_JOB_ID}]: Stage 1 CS ended"
+send_discord "[${SLURM_JOB_ID}]: Stage 1 DE ended"
 
-send_discord "[${SLURM_JOB_ID}]: Executing the python script for stage 2 CS"
+send_discord "[${SLURM_JOB_ID}]: Executing the python script for stage 2 DE"
 /home/asidani/.conda/envs/cliptrans/bin/python3 src/main.py "${CS_TRAIN_PARAMS_STAGE2[@]}"
-send_discord "[${SLURM_JOB_ID}]: Stage 2 CS ended"
+send_discord "[${SLURM_JOB_ID}]: Stage 2 DE ended"
 
 
 # send_discord "[${SLURM_JOB_ID}]: Executing the python script for stage 1 FR"
