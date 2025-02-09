@@ -33,104 +33,51 @@ source activate /home/asidani/.conda/envs/cliptrans
 # 3 Run the python script
 
 echo "[SCRIPT]: Starting the run"
-
 send_discord "[${SLURM_JOB_ID}]: Starting the run"
 
-# PRETRAINED_MODELS_INFERENCE_PARAMS=(
-#     --num_gpus 1
-#     --mn multi30k
-#     --src_lang en
-#     --tgt_lang de
-#     --prefix_length 10
-#     --bs 32
-#     --test_ds 2016 flickr
-#     --stage caption
-#     --test
-#     --lm model_pretrained.pth
-# )
-
-
-# --num_gpus 1 --mn multi30k --prefix_length 10 --bs 32 --update_count 4 --lr 1e-5 --test_ds 2016 val --stage caption --tgt_lang fr
-
-CS_TRAIN_PARAMS_STAGE1=(
-    --num_gpus 1
-    --mn multi30k
-    --prefix_length 10
-    --bs 32
-    --update_count 4
-    --lr 1e-5
-    --test_ds 2017 mscoco
-    --stage caption
-    --tgt_lang de
-    # --ct
-    # --lm model_pretrained.pth
-)
-
-CS_TRAIN_PARAMS_STAGE2=(
-    --num_gpus 1 
-    --mn multi30k 
-    --prefix_length 10 
-    --bs 32 
-    --update_count 4 
-    --lr 1e-5 
-    --test_ds 2017 mscoco 
-    --stage translate 
-    --tgt_lang de 
-    --lm model_pretrained.pth
-)
-
-FR_TRAIN_PARAMS_STAGE1=(
-    --num_gpus 1
-    --mn multi30k
-    --prefix_length 10
-    --bs 32
-    --update_count 4
-    --lr 1e-5
-    --test_ds 2017 mscoco
-    --stage caption
-    --tgt_lang fr
-    # --ct
-    # --lm model_pretrained.pth
-)
-
-FR_TRAIN_PARAMS_STAGE2=(
-    --num_gpus 1 
-    --mn multi30k 
-    --prefix_length 10 
-    --bs 32 
-    --update_count 4 
-    --lr 1e-5 
-    --test_ds 2017 mscoco 
-    --stage translate 
-    --tgt_lang fr 
-    --lm model_pretrained.pth
-)
+# Define loop parameters
+datasets=("2017 flickr" "2018 flickr")
+languages=("de" "fr")
 
 cd /home/asidani/CLIPTrans/
 
-# send_discord "[${SLURM_JOB_ID}]: Executing the python script for stage 1 DE"
+for dataset in "${datasets[@]}"; do
+    # Split dataset into year and name
+    read -r year ds_name <<< "$dataset"
+    
+    for lang in "${languages[@]}"; do
+        # Run stages in order: caption then translate
+        for stage in "caption" "translate"; do
+            # Build parameters array
+            params=(
+                --num_gpus 1
+                --mn multi30k
+                --prefix_length 10
+                --bs 32
+                --update_count 4
+                --lr 1e-5
+                --test_ds "$year" "$ds_name"
+                --stage "$stage"
+                --tgt_lang "$lang"
+            )
+            
+            # Add model parameter for translation stage
+            if [ "$stage" == "translate" ]; then
+                params+=(--lm model_pretrained.pth)
+            fi
 
-# /home/asidani/.conda/envs/cliptrans/bin/python3 src/main.py "${CS_TRAIN_PARAMS_STAGE1[@]}"
-# send_discord "[${SLURM_JOB_ID}]: Stage 1 DE ended"
-
-# send_discord "[${SLURM_JOB_ID}]: Executing the python script for stage 2 DE"
-# /home/asidani/.conda/envs/cliptrans/bin/python3 src/main.py "${CS_TRAIN_PARAMS_STAGE2[@]}"
-# send_discord "[${SLURM_JOB_ID}]: Stage 2 DE ended"
-
-
-send_discord "[${SLURM_JOB_ID}]: Executing the python script for stage 1 FR"
-
-/home/asidani/.conda/envs/cliptrans/bin/python3 src/main.py "${FR_TRAIN_PARAMS_STAGE1[@]}"
-send_discord "[${SLURM_JOB_ID}]: Stage 1 FR ended"
-
-send_discord "[${SLURM_JOB_ID}]: Executing the python script for stage 2 FR"
-/home/asidani/.conda/envs/cliptrans/bin/python3 src/main.py "${FR_TRAIN_PARAMS_STAGE2[@]}"
-send_discord "[${SLURM_JOB_ID}]: Stage 2 FR ended"
-
-# send discord "[${SLURM_JOB_ID}]: Executing the python script for inference"
-# /home/asidani/.conda/envs/cliptrans/bin/python3 src/main.py "${PRETRAINED_MODELS_INFERENCE_PARAMS[@]}"
-# send discord "[${SLURM_JOB_ID}]: Inference ended"
-
+            # Send start notification
+            send_discord "[${SLURM_JOB_ID}]: Starting ${ds_name} ${year}, ${lang}, ${stage}"
+            
+            # Execute the command
+            echo "[SCRIPT]: Running for ${ds_name} ${year}, ${lang}, ${stage}"
+            /home/asidani/.conda/envs/cliptrans/bin/python3 src/main.py "${params[@]}"
+            
+            # Send completion notification
+            send_discord "[${SLURM_JOB_ID}]: Completed ${ds_name} ${year}, ${lang}, ${stage}"
+        done
+    done
+done
 # Define the full path for log and error files
 LOG_FILE="/home/asidani/logs/job_name_${SLURM_JOB_ID}.log"
 ERR_FILE="/home/asidani/logs/job_name_${SLURM_JOB_ID}.err"
