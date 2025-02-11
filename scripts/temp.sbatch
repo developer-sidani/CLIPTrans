@@ -53,7 +53,7 @@ for dataset in "${datasets[@]}"; do
                 --num_gpus 1
                 --mn multi30k
                 --prefix_length 10
-                --bs 64
+                --bs 32
                 --update_count 4
                 --lr 1e-5
                 --test_ds "$year" "$ds_name"

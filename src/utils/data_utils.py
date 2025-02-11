@@ -52,36 +52,14 @@ def tokenize(texts, tokenizer, lang, outfile, desc = ''):
 			data = pkl.load(f)
 	return data
 
-def create_embeddings(dl, encoder, outfile, desc=''):
-    if os.path.exists(outfile):
-        os.remove(outfile)  # Ensure no partial files cause issues
-
-    # List to store embeddings in chunks
-    chunks = []
-    
-    with torch.no_grad():
-        with torch.autocast(device_type='cuda'):
-            for data in tqdm(dl, desc=desc):
-                # Generate embeddings for the batch and move to CPU
-                embeddings = encoder(send_to_cuda(data)).cpu()
-                chunks.append(embeddings)
-
-                # Save chunks to file incrementally
-                if len(chunks) > 10:  # Adjust chunk size if needed
-                    torch.save(torch.cat(chunks, dim=0), outfile)
-                    chunks = []  # Clear the list to free memory
-
-        # Save remaining chunks
-        if chunks:
-            if os.path.exists(outfile):
-                existing_embs = torch.load(outfile)
-                torch.save(torch.cat([existing_embs, torch.cat(chunks, dim=0)], dim=0), outfile)
-            else:
-                torch.save(torch.cat(chunks, dim=0), outfile)
-
-    # Load final embeddings to return
-    embs = torch.load(outfile)
-    return embs
+def create_embeddings(dl, encoder, outfile, desc = ''):
+	embs = torch.tensor([]).cuda()
+	with torch.no_grad():
+		with torch.autocast(device_type='cuda'):
+			for data in tqdm(dl, desc = desc):
+				embs = torch.cat((embs, encoder(send_to_cuda(data))), dim = 0)
+	torch.save(embs.cpu(), outfile)
+	return embs
 
 def postprocess_pairs(train_texts, test_texts, train_tok_mbart, test_tok_mbart, train_img_embs, test_img_embs, train_text_embs, test_text_embs, params, train_ignore_indices, test_ignore_indices, train_tok_mclip, test_tok_mclip, force_pretraining):
 	if params.stage in ['caption', 'text_recon'] or force_pretraining: # Need paired images in this stage, use ignore_indices to remove the respective test indices. force_pretraining used for caption_dataset in stage 4
