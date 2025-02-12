@@ -37,7 +37,7 @@ send_discord "[${SLURM_JOB_ID}]: Temp!!! Starting the run"
 
 # Define loop parameters
 datasets=("2016 flickr")
-languages=("de")
+languages=("fr" "cs")
 
 cd /home/asidani/CLIPTrans/
 
@@ -47,7 +47,7 @@ for dataset in "${datasets[@]}"; do
     
     for lang in "${languages[@]}"; do
         # Run stages in order: caption then translate
-        for stage in "translate"; do
+        for stage in "caption" "translate"; do
             # Build parameters array
             params=(
                 --num_gpus 1

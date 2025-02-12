@@ -5,8 +5,8 @@
 #SBATCH --gres=gpu:1
 #SBATCH --job-name=tst
 #SBATCH --mem=40GB
-#SBATCH --output=/home/asidani/logs/job_name_%j.log
-#SBATCH --error=/home/asidani/logs/job_name_%j.err
+#SBATCH --output=/home/asidani/logs/cliptrans/job_name_%j.log
+#SBATCH --error=/home/asidani/logs/cliptrans/job_name_%j.err
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=ahmad.sidani@studenti.polito.it
 
@@ -36,7 +36,7 @@ echo "[SCRIPT]: Starting the run"
 send_discord "[${SLURM_JOB_ID}]: Starting the run"
 
 # Define loop parameters
-datasets=("2017 flickr" "2018 flickr")
+datasets=("2017 flickr" "2017 mscoco" "2018 flickr")
 languages=("de" "fr")
 
 cd /home/asidani/CLIPTrans/
@@ -57,7 +57,7 @@ for dataset in "${datasets[@]}"; do
                 --update_count 4
                 --lr 1e-5
                 --test_ds "$year" "$ds_name"
-                --stage "$stage"
+                --stage translate
                 --tgt_lang "$lang"
             )
             
@@ -79,8 +79,8 @@ for dataset in "${datasets[@]}"; do
     done
 done
 # Define the full path for log and error files
-LOG_FILE="/home/asidani/logs/job_name_${SLURM_JOB_ID}.log"
-ERR_FILE="/home/asidani/logs/job_name_${SLURM_JOB_ID}.err"
+LOG_FILE="/home/asidani/logs/cliptrans/job_name_${SLURM_JOB_ID}.log"
+ERR_FILE="/home/asidani/logs/cliptrans/job_name_${SLURM_JOB_ID}.err"
 
 
 python3 /home/asidani/notif.py "$LOG_FILE" "$ERR_FILE"
