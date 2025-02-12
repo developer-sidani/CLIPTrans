@@ -38,38 +38,31 @@ def get_Multi30k(params, model, test = ('2017', 'mscoco'), force_pretraining = F
 
 	try:
 		train_tok_mbart = {lang: pkl.load(open(os.path.join(datapath, f'text/data/task1/mbart/train.{lang}.pkl'), 'rb')) for lang in langs}
-		print("[DEBUG]: Loaded train tokenized data for mbart.")
-	except Exception as e:
-		print(f"[DEBUG]: Could not load mbart train tokenized data: {e}")
+	except:
+		print('[DEBUG]: Did not find mbart train tokenized data. Creating...')
 		train_tok_mbart = {lang: tokenize(train_texts[lang], model.tokenizer, lang, os.path.join(datapath, f'text/data/task1/mbart/train.{lang}.pkl'), f'Tokenizing train {lang} with mbart') for lang in langs}
-		print("[DEBUG]: Created mbart tokenized train data.")
 
 	try:
 		train_tok_mclip = {lang: pkl.load(open(os.path.join(datapath, f'text/data/task1/{params.image_encoder}/train.{lang}.pkl'), 'rb')) for lang in langs}
-		print("[DEBUG]: Loaded train tokenized data for mclip.")
-	except Exception as e:
-		print(f"[DEBUG]: Could not load mclip train tokenized data: {e}")
+	except:
+		print('[DEBUG]: Did not find mclip train tokenized data. Creating...')
 		train_tok_mclip = {lang: tokenize(train_texts[lang], model.clip.text_preprocessor, lang, os.path.join(datapath, f'text/data/task1/{params.image_encoder}/train.{lang}.pkl'), f'Tokenizing train {lang} with {params.image_encoder}') for lang in langs}
-		print("[DEBUG]: Created mclip tokenized train data.")
+
 	
 	# Reading test files
 	test_texts = {lang: open(os.path.join(datapath, f'text/data/task1/raw/test_{test[0]}_{test[1]}.{lang}')).read().splitlines() for lang in langs}
 	print(f"[DEBUG]: Loaded test_texts for languages: {list(test_texts.keys())}")
 	try:
 		test_tok_mbart = {lang: pkl.load(open(os.path.join(datapath, f'text/data/task1/mbart/test_{test[0]}_{test[1]}.{lang}.pkl'), 'rb')) for lang in langs}
-		print("[DEBUG]: Loaded test tokenized data for mbart.")
-	except Exception as e:
-		print(f"Could not load mbart test tokenized data: {e}")
+	except:
+		print('[DEBUG]: Did not find mbart test tokenized data. Creating...')
 		test_tok_mbart = {lang: tokenize(test_texts[lang], model.tokenizer, lang, os.path.join(datapath, f'text/data/task1/mbart/test_{test[0]}_{test[1]}.{lang}.pkl'), f'Tokenizing test {lang} with mbart') for lang in langs}
-		print("[DEBUG]: Created mbart tokenized test data.")
 
 	try:
 		test_tok_mclip = {lang: pkl.load(open(os.path.join(datapath, f'text/data/task1/{params.image_encoder}/test_{test[0]}_{test[1]}.{lang}.pkl'), 'rb')) for lang in langs}
-		print("[DEBUG]: Loaded test tokenized data for mclip.")
-	except Exception as e:
-		print(f"[DEBUG]: Could not load mclip test tokenized data: {e}")
+	except:
+		print('[DEBUG]: Did not find mclip test tokenized data. Creating...')
 		test_tok_mclip = {lang: tokenize(test_texts[lang], model.clip.text_preprocessor, lang, os.path.join(datapath, f'text/data/task1/{params.image_encoder}/test_{test[0]}_{test[1]}.{lang}.pkl'), f'Tokenizing test {lang} with {params.image_encoder}') for lang in langs}
-		print("[DEBUG]: Created mclip tokenized test data.")
 
 	train_image_splits = open(os.path.join(datapath, f'text/data/task1/image_splits/train.txt')).read().splitlines()
 	test_image_splits = open(os.path.join(datapath, f'text/data/task1/image_splits/test_{test[0]}_{test[1]}.txt')).read().splitlines()
@@ -83,39 +76,19 @@ def get_Multi30k(params, model, test = ('2017', 'mscoco'), force_pretraining = F
 	for lang in langs:
 		print(f"[DEBUG]: Processing embeddings for language: {lang}")
 		embs_f = os.path.join(datapath, f'text/data/task1/{params.image_encoder}/train.{lang}.pth')
-		print(f"[DEBUG]: Looking for train embeddings file: {embs_f}")
-		# print(f"[DEBUG]: Could not load train embeddings for {lang}: {e}")
-		print(f"[DEBUG]: Creating embeddings for train.{lang}...")
-		text_ds = DocDataset(train_tok_mclip[lang])
-		print(f"[DEBUG]: Created dataset for train.{lang}, size: {len(text_ds)}")
-		text_dl = DataLoader(text_ds, batch_size=256, shuffle=False, num_workers=0, pin_memory=True, collate_fn=collate_texts)
-		print(f"[DEBUG]: DataLoader for train.{lang} created with batch size 256")
-		train_text_embs[lang] = create_embeddings(text_dl, model.clip, embs_f, f'Embedding train.{lang} mclip')
-		print(f"[DEBUG]: Saved train embeddings for {lang} to {embs_f}")
-			
+		try:
+			train_text_embs[lang] = torch.load(embs_f)
+		except:
+			text_ds = DocDataset(train_tok_mclip[lang])
+			text_dl = DataLoader(text_ds, batch_size = 256, shuffle = False, num_workers = 0, pin_memory = True, collate_fn = collate_texts)
+			train_text_embs[lang] = create_embeddings(text_dl, model.clip, embs_f, f'Embedding train.{lang} mclip')
 
-		# Test embeddings
 		embs_f = os.path.join(datapath, f'text/data/task1/{params.image_encoder}/test_{test[0]}_{test[1]}.{lang}.pth')
-		# print(f"[DEBUG]: Could not load test embeddings for {lang}: {e}")
-		print(f"[DEBUG]: Creating embeddings for test_{test[0]}_{test[1]}.{lang}...")
-		text_ds = DocDataset(test_tok_mclip[lang])
-		print(f"[DEBUG]: Created dataset for test_{test[0]}_{test[1]}.{lang}, size: {len(text_ds)}")
-		text_dl = DataLoader(text_ds, batch_size=256, shuffle=False, num_workers=0, pin_memory=True, collate_fn=collate_texts)
-		print(f"[DEBUG]: DataLoader for test_{test[0]}_{test[1]}.{lang} created with batch size 256")
-		test_text_embs[lang] = create_embeddings(text_dl, model.clip, embs_f, f'Embedding test_{test[0]}_{test[1]}.{lang} mclip')
-		print(f"[DEBUG]: Saved test embeddings for {lang} to {embs_f}")
-		# print(f"[DEBUG]: Looking for test embeddings file: {embs_f}")
-		# try:
-		# 	test_text_embs[lang] = torch.load(embs_f)
-		# 	print(f"[DEBUG]: Loaded test embeddings for {lang} from {embs_f}")
-		# except Exception as e:
-		# 	print(f"[DEBUG]: Could not load test embeddings for {lang}: {e}")
-		# 	print(f"[DEBUG]: Creating embeddings for test_{test[0]}_{test[1]}.{lang}...")
-		# 	text_ds = DocDataset(test_tok_mclip[lang])
-		# 	print(f"[DEBUG]: Created dataset for test_{test[0]}_{test[1]}.{lang}, size: {len(text_ds)}")
-		# 	text_dl = DataLoader(text_ds, batch_size=256, shuffle=False, num_workers=4, pin_memory=True, collate_fn=collate_texts)
-		# 	print(f"[DEBUG]: DataLoader for test_{test[0]}_{test[1]}.{lang} created with batch size 256")
-		# 	test_text_embs[lang] = create_embeddings(text_dl, model.clip, embs_f, f'Embedding test_{test[0]}_{test[1]}.{lang} mclip')
-		# 	print(f"[DEBUG]: Saved test embeddings for {lang} to {embs_f}")
+		try:
+			test_text_embs[lang] = torch.load(embs_f)
+		except:
+			text_ds = DocDataset(test_tok_mclip[lang])
+			text_dl = DataLoader(text_ds, batch_size = 256, shuffle = False, num_workers = 4, pin_memory = True, collate_fn = collate_texts)
+			test_text_embs[lang] = create_embeddings(text_dl, model.clip, embs_f, f'Embedding test_{test[0]}_{test[1]}.{lang} mclip')
 
 	return train_texts, test_texts, train_tok_mbart, test_tok_mbart, train_img_embs, test_img_embs, train_text_embs, test_text_embs, train_tok_mclip, test_tok_mclip
