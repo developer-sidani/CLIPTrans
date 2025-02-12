@@ -70,6 +70,7 @@ class Runner:
         model.train()
         train_loss = 0.0
         self.optimizer.zero_grad()
+        print('Train_DL:', len(self.train_dl))
         for step, batch in enumerate(tqdm(self.train_dl, desc=f'Epoch {epoch}', disable=not is_main_process())):
             self.experiment.log_metric("epoch", epoch, step=epoch)
             batch['mbart'], batch['clip'] = send_to_cuda(batch['mbart']), send_to_cuda(batch['clip'])
