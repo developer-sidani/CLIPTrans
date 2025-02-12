@@ -32,8 +32,8 @@ source activate /home/asidani/.conda/envs/cliptrans
 
 # 3 Run the python script
 
-echo "[SCRIPT]: Temp!!! Starting the run"
-send_discord "[${SLURM_JOB_ID}]: Temp!!! Starting the run"
+echo "[SCRIPT]: Starting the run"
+send_discord "[${SLURM_JOB_ID}]: Starting the run"
 
 # Define loop parameters
 datasets=("2016 flickr")
@@ -57,7 +57,7 @@ for dataset in "${datasets[@]}"; do
                 --update_count 4
                 --lr 1e-5
                 --test_ds "$year" "$ds_name"
-                --stage translate
+                --stage "$stage"
                 --tgt_lang "$lang"
             )
             
@@ -67,14 +67,14 @@ for dataset in "${datasets[@]}"; do
             fi
 
             # Send start notification
-            send_discord "[${SLURM_JOB_ID}]: Temp!!! Starting ${ds_name} ${year}, ${lang}, ${stage}"
+            send_discord "[${SLURM_JOB_ID}]: Starting ${ds_name} ${year}, ${lang}, ${stage}"
             
             # Execute the command
-            echo "[SCRIPT]: Temp!!! Running for ${ds_name} ${year}, ${lang}, ${stage}"
+            echo "[SCRIPT]: Running for ${ds_name} ${year}, ${lang}, ${stage}"
             /home/asidani/.conda/envs/cliptrans/bin/python3 src/main.py "${params[@]}"
             
             # Send completion notification
-            send_discord "[${SLURM_JOB_ID}]: Temp!!! Completed ${ds_name} ${year}, ${lang}, ${stage}"
+            send_discord "[${SLURM_JOB_ID}]: Completed ${ds_name} ${year}, ${lang}, ${stage}"
         done
     done
 done

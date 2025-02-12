@@ -57,7 +57,7 @@ for dataset in "${datasets[@]}"; do
                 --update_count 4
                 --lr 1e-5
                 --test_ds "$year" "$ds_name"
-                --stage translate
+                --stage "$stage"
                 --tgt_lang "$lang"
             )
             
